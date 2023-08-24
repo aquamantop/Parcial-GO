@@ -64,3 +64,24 @@ func GetTotalTickets(destination string) int {
 
 	return totalTickets
 }
+
+// Requerimiento 2 - Calcular cuántas personas viajan segun etapa del dia:
+func GetCountByPeriod(period string) int {
+	count := 0
+
+	startTime, endTime := getPeriodTimeRange(period)
+	if startTime == nil || endTime == nil {
+		panic("Período de tiempo no válido")
+	}
+	for _, ticket := range Tickets {
+		ticketHour, err := time.Parse("15:04", ticket.Hora)
+		if err != nil {
+			fmt.Errorf("Error al formatear la hora: %s", ticket.Hora)
+		}
+
+		if ticketHour.After(*startTime) && ticketHour.Before(*endTime) {
+			count++
+		}
+	}
+	return count
+}
