@@ -2,7 +2,10 @@ package tickets
 
 import (
 	"encoding/csv"
+	"fmt"
 	"os"
+	"strings"
+	"time"
 )
 
 type Ticket struct {
@@ -84,4 +87,38 @@ func GetCountByPeriod(period string) int {
 		}
 	}
 	return count
+}
+
+// Función auxiliar para obtener el rango de tiempo para un período dado
+func getPeriodTimeRange(period string) (*time.Time, *time.Time) {
+	start := time.Now()
+	end := time.Now()
+
+	switch strings.ToLower(period) {
+	case "madrugada":
+		start, _ = time.Parse("15:04", "00:00")
+		end, _ = time.Parse("15:04", "06:59")
+	case "mañana":
+		start, _ = time.Parse("15:04", "07:00")
+		end, _ = time.Parse("15:04", "12:59")
+	case "tarde":
+		start, _ = time.Parse("15:04", "13:00")
+		end, _ = time.Parse("15:04", "19:59")
+	case "noche":
+		start, _ = time.Parse("15:04", "20:00")
+		end, _ = time.Parse("15:04", "23:59")
+	default:
+		return nil, nil
+	}
+
+	return &start, &end
+}
+
+// Requerimiento 3 - Calcular el porcentaje de personas que viajan a un país determinado en un día.
+func PercentageDestination(destination string) float64 {
+	count := GetTotalTickets(destination)
+
+	percentage := float64(count) / float64(len(Tickets)) * 100.0
+
+	return percentage
 }
